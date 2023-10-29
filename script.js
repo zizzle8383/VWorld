@@ -57,7 +57,7 @@ function drawPlayer() {
     const height = player.sprite.height * scale;
 
     // Draw player after the treasure map
-    ctx.drawImage(player.sprite, player.x, player.y, width, height);
+    ctx.drawImage(player.sprite, player.x - width / 2, player.y - height / 2, width, height);
 }
 
 function drawRoom() {
@@ -75,31 +75,15 @@ function drawRoom() {
     };
     background.src = currentRoomData.background;
 
-    foreground.onload = function() {
-        ctx.drawImage(foreground, 0, 0, canvas.width, canvas.height);
-    };
-    foreground.onerror = function() {
-        console.error("Error loading foreground image.");
-    };
-    foreground.src = currentRoomData.foreground;
-
-    treasureMap.onload = function() {
-        ctx.globalAlpha = 0;
-        ctx.drawImage(treasureMap, 0, 0, canvas.width, canvas.height);
-        ctx.globalAlpha = 1;
-    };
-    treasureMap.onerror = function() {
-        console.error("Error loading treasure map image.");
-    };
-    treasureMap.src = currentRoomData.treasureMap;
+    // ... (same code for foreground and treasureMap as in the previous response)
 }
 
 canvas.addEventListener("click", function(event) {
     const rect = canvas.getBoundingClientRect();
-    const mouseX = event.clientX - rect.left - player.sprite.width / 2;
-    const mouseY = event.clientY - rect.top - player.sprite.height / 2;
+    const mouseX = event.clientX - rect.left;
+    const mouseY = event.clientY - rect.top;
 
-    const imageData = ctx.getImageData(mouseX + player.sprite.width / 2, mouseY + player.sprite.height / 2, 1, 1).data;
+    const imageData = ctx.getImageData(mouseX, mouseY, 1, 1).data;
     const isClickable = imageData[3] > 0;
 
     if (isClickable) {
