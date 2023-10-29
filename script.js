@@ -34,6 +34,8 @@ player.sprite.src = "kakapo.png";
 const MAX_PLAYER_SIZE = 100; // Set maximum size for the player sprite
 const TWEEN_DURATION = 500; // Duration of the movement animation in milliseconds
 
+const tweenQueue = []; // Queue to store tweening animations
+
 function startTween(endX, endY) {
     const startX = player.x;
     const startY = player.y;
@@ -52,11 +54,49 @@ function startTween(endX, endY) {
 
         if (progress < 1) {
             requestAnimationFrame(animateTween);
+        } else {
+            // Remove the completed tween animation from the queue
+            tweenQueue.shift();
+
+            // Process the next tween animation in the queue, if any
+            const nextTween = tweenQueue[0];
+            if (nextTween) {
+                startTween(nextTween.endX, nextTween.endY);
+            }
         }
     }
 
+    // Clear the existing tween animations in the queue
+    tweenQueue.length = 0;
+
+    // Add the new tween animation to the queue and start it immediately
+    tweenQueue.push({ endX, endY });
     requestAnimationFrame(animateTween);
 }
+
+canvas.addEventListener("click", function(event) {
+    const rect = canvas.getBoundingClientRect();
+    const mouseX = Math.floor(event.clientX - rect.left);
+    const mouseY = Math.floor(event.clientY - rect.top);
+
+    // Check if the click is within the player's bounding box
+    const playerWidth = player.sprite.width;
+    const playerHeight = player.sprite.height;
+    const playerX = Math.floor(player.x - playerWidth / 2);
+    const playerY = Math.floor(player.y - playerHeight / 2);
+
+    if (
+        mouseX >= playerX &&
+        mouseX <= playerX + playerWidth &&
+        mouseY >= playerY &&
+        mouseY <= playerY + playerHeight
+    ) {
+        return; // Do nothing if the click is on the player
+    }
+
+    // Start the new tweening animation for the clicked position
+    startTween(mouseX, mouseY);
+});
 
 function drawPlayer() {
     // Calculate the scaled width and height for the player sprite
@@ -83,29 +123,6 @@ function drawRoom() {
     ctx.drawImage(rooms[0].treasureMap, 0, 0, canvas.width, canvas.height);
     ctx.globalAlpha = 1;
 }
-
-canvas.addEventListener("click", function(event) {
-    const rect = canvas.getBoundingClientRect();
-    const mouseX = Math.floor(event.clientX - rect.left);
-    const mouseY = Math.floor(event.clientY - rect.top);
-
-    // Check if the click is within the player's bounding box
-    const playerWidth = player.sprite.width;
-    const playerHeight = player.sprite.height;
-    const playerX = Math.floor(player.x - playerWidth / 2);
-    const playerY = Math.floor(player.y - playerHeight / 2);
-
-    if (
-        mouseX >= playerX &&
-        mouseX <= playerX + playerWidth &&
-        mouseY >= playerY &&
-        mouseY <= playerY + playerHeight
-    ) {
-        return; // Do nothing if the click is on the player
-    }
-
-    startTween(mouseX, mouseY);
-});
 
 window.onload = function() {
     // Load the initial room
