@@ -13,8 +13,9 @@ const rooms = [
 const player = {
     x: canvas.width / 2,
     y: canvas.height / 2,
-    width: 250, // Set the player sprite's width
-    height: 283, // Set the player sprite's height
+    originalWidth: 250, // Set the original width of the player sprite
+    originalHeight: 283, // Set the original height of the player sprite
+    scale: 0.5, // Initial scale factor
     sprite: new Image()
 };
 
@@ -52,7 +53,9 @@ function startTween(endX, endY) {
 }
 
 function drawPlayer() {
-    ctx.drawImage(player.sprite, player.x - player.width / 2, player.y - player.height / 2, player.width, player.height);
+    const width = player.originalWidth * player.scale;
+    const height = player.originalHeight * player.scale;
+    ctx.drawImage(player.sprite, player.x - width / 2, player.y - height / 2, width, height);
 }
 
 function drawRoom() {
@@ -91,8 +94,8 @@ function drawRoom() {
 
 canvas.addEventListener("click", function(event) {
     const rect = canvas.getBoundingClientRect();
-    const mouseX = event.clientX - rect.left;
-    const mouseY = event.clientY - rect.top;
+    const mouseX = (event.clientX - rect.left - canvas.width / 2) / player.scale + player.x;
+    const mouseY = (event.clientY - rect.top - canvas.height / 2) / player.scale + player.y;
 
     const isClickable = checkPixelCollision(mouseX, mouseY);
     
