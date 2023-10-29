@@ -26,10 +26,31 @@ player.sprite.onerror = function() {
 
 player.sprite.src = "kakapo.png";
 
-const SCROLL_SPEED = 5; // Adjust the scroll speed as needed
+const TWEEN_DURATION = 500; // Duration of the movement animation in milliseconds
+
+function startTween(endX, endY) {
+    const startX = player.x;
+    const startY = player.y;
+    const startTime = Date.now();
+
+    function animateTween() {
+        const elapsed = Date.now() - startTime;
+        const progress = Math.min(1, elapsed / TWEEN_DURATION);
+        player.x = startX + (endX - startX) * progress;
+        player.y = startY + (endY - startY) * progress;
+
+        drawRoom();
+
+        if (progress < 1) {
+            requestAnimationFrame(animateTween);
+        }
+    }
+
+    requestAnimationFrame(animateTween);
+}
 
 function drawPlayer() {
-    ctx.drawImage(player.sprite, canvas.width / 2, canvas.height / 2);
+    ctx.drawImage(player.sprite, player.x, player.y);
 }
 
 function drawRoom() {
@@ -39,8 +60,8 @@ function drawRoom() {
     const treasureMap = new Image();
 
     background.onload = function() {
-        ctx.drawImage(background, canvas.width / 2 - player.x, canvas.height / 2 - player.y);
-        drawPlayer();
+        ctx.drawImage(background, 0, 0, canvas.width, canvas.height);
+        drawPlayer(); // Draw the player after the background
     };
     background.onerror = function() {
         console.error("Error loading background image.");
@@ -48,7 +69,7 @@ function drawRoom() {
     background.src = currentRoomData.background;
 
     foreground.onload = function() {
-        ctx.drawImage(foreground, canvas.width / 2 - player.x, canvas.height / 2 - player.y);
+        ctx.drawImage(foreground, 0, 0, canvas.width, canvas.height);
     };
     foreground.onerror = function() {
         console.error("Error loading foreground image.");
@@ -57,7 +78,7 @@ function drawRoom() {
 
     treasureMap.onload = function() {
         ctx.globalAlpha = 0;
-        ctx.drawImage(treasureMap, canvas.width / 2 - player.x, canvas.height / 2 - player.y);
+        ctx.drawImage(treasureMap, 0, 0, canvas.width, canvas.height);
         ctx.globalAlpha = 1;
     };
     treasureMap.onerror = function() {
@@ -68,24 +89,18 @@ function drawRoom() {
 
 canvas.addEventListener("click", function(event) {
     const rect = canvas.getBoundingClientRect();
-    const mouseX = event.clientX - rect.left;
-    const mouseY = event.clientY - rect.top;
+    const mouseX = event.clientX - rect.left - player.sprite.width / 2;
+    const mouseY = event.clientY - rect.top - player.sprite.height / 2;
 
-    player.x = mouseX;
-    player.y = mouseY;
+    const imageData = ctx.getImageData(mouseX + player.sprite.width / 2, mouseY + player.sprite.height / 2, 1, 1).data;
+    const isClickable = imageData[3] > 0;
 
-    drawRoom();
+    if (isClickable) {
+        startTween(mouseX, mouseY);
+    }
 });
 
-function updateGame() {
-    // Implement any game logic here
-
-    // Request a new animation frame
-    requestAnimationFrame(updateGame);
-}
-
-// Start the game loop
 window.onload = function() {
-    drawRoom(); // Draw the initial room
-    updateGame(); // Start the game loop
+    // Load the initial room
+    drawRoom();
 };
