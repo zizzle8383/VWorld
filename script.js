@@ -69,7 +69,7 @@ function drawRoom() {
     background.onload = function() {
         ctx.drawImage(background, 0, 0, canvas.width, canvas.height);
         drawPlayer(); // Draw the player after the background
-        drawForeground(); // Draw the foreground after the player
+        drawForeground(foreground); // Draw the foreground after the player
     };
     background.onerror = function() {
         console.error("Error loading background image.");
