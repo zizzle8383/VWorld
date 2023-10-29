@@ -1,3 +1,5 @@
+let currentRoom = 0; // Initialize currentRoom variable
+
 const canvas = document.getElementById("gameCanvas");
 const ctx = canvas.getContext("2d");
 
@@ -28,20 +30,17 @@ player.sprite.onerror = function() {
 
 player.sprite.src = "kakapo.png";
 
-const MAX_PLAYER_SIZE = 100; // Set maximum size for the player sprite
-const MOVE_SPEED = 2; // Set the speed at which the player moves (you can adjust this value)
+const MAX_PLAYER_SIZE = 100;
+const MOVE_SPEED = 0.1; // Adjust the speed of the player's movement
 
 function drawPlayer() {
-    // Calculate the interpolated position for smooth movement
     player.x += (player.targetX - player.x) * MOVE_SPEED;
     player.y += (player.targetY - player.y) * MOVE_SPEED;
 
-    // Calculate the scaled width and height for the player sprite
     const scale = Math.min(1, MAX_PLAYER_SIZE / player.sprite.width, MAX_PLAYER_SIZE / player.sprite.height);
     const width = player.sprite.width * scale;
     const height = player.sprite.height * scale;
 
-    // Draw player after the treasure map
     ctx.drawImage(player.sprite, player.x, player.y, width, height);
 }
 
@@ -53,14 +52,30 @@ function drawRoom() {
 
     background.onload = function() {
         ctx.drawImage(background, 0, 0, canvas.width, canvas.height);
-        drawPlayer(); // Draw the player after the background
+        drawPlayer();
     };
     background.onerror = function() {
         console.error("Error loading background image.");
     };
     background.src = currentRoomData.background;
 
-    // ... (same code for foreground and treasureMap as in the previous response)
+    foreground.onload = function() {
+        ctx.drawImage(foreground, 0, 0, canvas.width, canvas.height);
+    };
+    foreground.onerror = function() {
+        console.error("Error loading foreground image.");
+    };
+    foreground.src = currentRoomData.foreground;
+
+    treasureMap.onload = function() {
+        ctx.globalAlpha = 0;
+        ctx.drawImage(treasureMap, 0, 0, canvas.width, canvas.height);
+        ctx.globalAlpha = 1;
+    };
+    treasureMap.onerror = function() {
+        console.error("Error loading treasure map image.");
+    };
+    treasureMap.src = currentRoomData.treasureMap;
 }
 
 canvas.addEventListener("click", function(event) {
@@ -79,7 +94,6 @@ function gameLoop() {
 }
 
 window.onload = function() {
-    // Load the initial room and start the game loop
     player.sprite.onload();
     gameLoop();
 };
