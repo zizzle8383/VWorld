@@ -3,12 +3,17 @@ const ctx = canvas.getContext("2d");
 
 const rooms = [
     {
-        background: "Images/background.png",
-        foreground: "Images/foreground.png",
-        treasureMap: "Images/navmesh.png"
+        background: new Image(),
+        foreground: new Image(),
+        treasureMap: new Image()
     }
     // Add more rooms here as needed
 ];
+
+// Set image sources
+rooms[0].background.src = "Images/background.png";
+rooms[0].foreground.src = "Images/foreground.png";
+rooms[0].treasureMap.src = "Images/navmesh.png";
 
 const player = {
     x: canvas.width / 2,
@@ -63,38 +68,20 @@ function drawPlayer() {
     ctx.drawImage(player.sprite, Math.floor(player.x - width / 2), Math.floor(player.y - height / 2), width, height);
 }
 
+function drawForeground() {
+    ctx.drawImage(rooms[0].foreground, 0, 0, canvas.width, canvas.height);
+}
+
 function drawRoom() {
-    const currentRoomData = rooms[0]; // For simplicity, use the first room in the rooms array
-    const background = new Image();
-    const foreground = new Image();
-    const treasureMap = new Image();
+    ctx.clearRect(0, 0, canvas.width, canvas.height); // Clear the canvas
 
-    background.onload = function() {
-        ctx.drawImage(background, 0, 0, canvas.width, canvas.height);
-        drawPlayer(); // Draw the player after the background
-    };
-    background.onerror = function() {
-        console.error("Error loading background image.");
-    };
-    background.src = currentRoomData.background;
+    ctx.drawImage(rooms[0].background, 0, 0, canvas.width, canvas.height);
+    drawPlayer(); // Draw the player after the background
+    drawForeground(); // Draw the foreground on top of the player
 
-    foreground.onload = function() {
-        ctx.drawImage(foreground, 0, 0, canvas.width, canvas.height);
-    };
-    foreground.onerror = function() {
-        console.error("Error loading foreground image.");
-    };
-    foreground.src = currentRoomData.foreground;
-
-    treasureMap.onload = function() {
-        ctx.globalAlpha = 0;
-        ctx.drawImage(treasureMap, 0, 0, canvas.width, canvas.height);
-        ctx.globalAlpha = 1;
-    };
-    treasureMap.onerror = function() {
-        console.error("Error loading treasure map image.");
-    };
-    treasureMap.src = currentRoomData.treasureMap;
+    ctx.globalAlpha = 0;
+    ctx.drawImage(rooms[0].treasureMap, 0, 0, canvas.width, canvas.height);
+    ctx.globalAlpha = 1;
 }
 
 canvas.addEventListener("click", function(event) {
