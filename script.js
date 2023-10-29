@@ -43,7 +43,7 @@ function startTween(endX, endY) {
         player.x = startX + (endX - startX) * progress;
         player.y = startY + (endY - startY) * progress;
 
-        drawRoom();
+        requestAnimationFrame(drawRoom); // Render the room after each frame
 
         if (progress < 1) {
             requestAnimationFrame(animateTween);
