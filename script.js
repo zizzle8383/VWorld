@@ -89,12 +89,22 @@ canvas.addEventListener("click", function(event) {
     const mouseX = Math.floor(event.clientX - rect.left);
     const mouseY = Math.floor(event.clientY - rect.top);
 
-    const imageData = ctx.getImageData(mouseX, mouseY, 1, 1).data;
-    const isClickable = imageData[3] > 0;
+    // Check if the click is within the player's bounding box
+    const playerWidth = player.sprite.width;
+    const playerHeight = player.sprite.height;
+    const playerX = Math.floor(player.x - playerWidth / 2);
+    const playerY = Math.floor(player.y - playerHeight / 2);
 
-    if (isClickable) {
-        startTween(mouseX, mouseY);
+    if (
+        mouseX >= playerX &&
+        mouseX <= playerX + playerWidth &&
+        mouseY >= playerY &&
+        mouseY <= playerY + playerHeight
+    ) {
+        return; // Do nothing if the click is on the player
     }
+
+    startTween(mouseX, mouseY);
 });
 
 window.onload = function() {
