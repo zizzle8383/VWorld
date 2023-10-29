@@ -33,23 +33,12 @@ function startTween(endX, endY) {
     const startX = player.x;
     const startY = player.y;
     const startTime = Date.now();
-    const initialScale = Math.min(1, MAX_PLAYER_SIZE / player.sprite.width, MAX_PLAYER_SIZE / player.sprite.height);
 
     function animateTween() {
         const elapsed = Date.now() - startTime;
         const progress = Math.min(1, elapsed / TWEEN_DURATION);
-        
-        const currentScale = Math.min(
-            1,
-            MAX_PLAYER_SIZE / player.sprite.width,
-            MAX_PLAYER_SIZE / player.sprite.height
-        );
-
-        const scaledEndX = endX / currentScale;
-        const scaledEndY = endY / currentScale;
-
-        player.x = startX + (scaledEndX - startX) * progress;
-        player.y = startY + (scaledEndY - startY) * progress;
+        player.x = startX + (endX - startX) * progress;
+        player.y = startY + (endY - startY) * progress;
 
         drawRoom();
 
@@ -104,10 +93,10 @@ function drawRoom() {
 
 canvas.addEventListener("click", function(event) {
     const rect = canvas.getBoundingClientRect();
-    const mouseX = event.clientX - rect.left;
-    const mouseY = event.clientY - rect.top;
+    const mouseX = (event.clientX - rect.left - player.x) / (player.sprite.width / 2);
+    const mouseY = (event.clientY - rect.top - player.y) / (player.sprite.height / 2);
 
-    const imageData = ctx.getImageData(mouseX, mouseY, 1, 1).data;
+    const imageData = ctx.getImageData(player.x, player.y, 1, 1).data;
     const isClickable = imageData[3] > 0;
 
     if (isClickable) {
