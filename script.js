@@ -69,7 +69,6 @@ function drawRoom() {
     background.onload = function() {
         ctx.drawImage(background, 0, 0, canvas.width, canvas.height);
         drawPlayer(); // Draw the player after the background
-        drawForeground(foreground); // Draw the foreground after the player
     };
     background.onerror = function() {
         console.error("Error loading background image.");
@@ -77,8 +76,7 @@ function drawRoom() {
     background.src = currentRoomData.background;
 
     foreground.onload = function() {
-        // Draw the foreground after it's loaded
-        drawForeground(foreground);
+        ctx.drawImage(foreground, 0, 0, canvas.width, canvas.height);
     };
     foreground.onerror = function() {
         console.error("Error loading foreground image.");
@@ -94,15 +92,6 @@ function drawRoom() {
         console.error("Error loading treasure map image.");
     };
     treasureMap.src = currentRoomData.treasureMap;
-}
-
-
-
-function drawForeground(foregroundImage) {
-    // Draw the foreground after clearing the player's previous position
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    ctx.drawImage(player.sprite, player.x - player.sprite.width / 2, player.y - player.sprite.height / 2);
-    ctx.drawImage(foregroundImage, 0, 0, canvas.width, canvas.height);
 }
 
 canvas.addEventListener("click", function(event) {
