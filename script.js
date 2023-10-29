@@ -40,10 +40,10 @@ function startTween(endX, endY) {
     function animateTween() {
         const elapsed = Date.now() - startTime;
         const progress = Math.min(1, elapsed / duration);
-        player.x = startX + (endX - startX) * progress;
-        player.y = startY + (endY - startY) * progress;
+        player.x = Math.floor(startX + (endX - startX) * progress);
+        player.y = Math.floor(startY + (endY - startY) * progress);
 
-        requestAnimationFrame(drawRoom); // Render the room after each frame
+        drawRoom();
 
         if (progress < 1) {
             requestAnimationFrame(animateTween);
@@ -56,11 +56,11 @@ function startTween(endX, endY) {
 function drawPlayer() {
     // Calculate the scaled width and height for the player sprite
     const scale = Math.min(1, MAX_PLAYER_SIZE / player.sprite.width, MAX_PLAYER_SIZE / player.sprite.height);
-    const width = player.sprite.width * scale;
-    const height = player.sprite.height * scale;
+    const width = Math.floor(player.sprite.width * scale);
+    const height = Math.floor(player.sprite.height * scale);
 
     // Draw player after the treasure map
-    ctx.drawImage(player.sprite, player.x - width / 2, player.y - height / 2, width, height);
+    ctx.drawImage(player.sprite, Math.floor(player.x - width / 2), Math.floor(player.y - height / 2), width, height);
 }
 
 function drawRoom() {
@@ -99,8 +99,8 @@ function drawRoom() {
 
 canvas.addEventListener("click", function(event) {
     const rect = canvas.getBoundingClientRect();
-    const mouseX = event.clientX - rect.left;
-    const mouseY = event.clientY - rect.top;
+    const mouseX = Math.floor(event.clientX - rect.left);
+    const mouseY = Math.floor(event.clientY - rect.top);
 
     const imageData = ctx.getImageData(mouseX, mouseY, 1, 1).data;
     const isClickable = imageData[3] > 0;
