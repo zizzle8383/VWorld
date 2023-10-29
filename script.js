@@ -5,9 +5,9 @@ const ctx = canvas.getContext("2d");
 
 const rooms = [
     {
-        background: "townbg.jpeg",
-        foreground: "townfg.jpeg",
-        treasureMap: "towntm.jpeg"
+        background: "Images/background (1).png",
+        foreground: "Images/foreground (1).png",
+        treasureMap: "Images/navmesh.png"
     }
     // Add more rooms here as needed
 ];
