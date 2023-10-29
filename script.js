@@ -80,8 +80,8 @@ canvas.addEventListener("click", function(event) {
     const mouseY = Math.floor(event.clientY - rect.top);
 
     // Check if the click is within the player's bounding box
-    const playerWidth = player.sprite.width;
-    const playerHeight = player.sprite.height;
+    const playerWidth = player.sprite.width/2;
+    const playerHeight = player.sprite.height/2;
     const playerX = Math.floor(player.x - playerWidth / 2);
     const playerY = Math.floor(player.y - playerHeight / 2);
 
