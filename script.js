@@ -32,11 +32,14 @@ const TWEEN_DURATION = 500; // Duration of the movement animation in millisecond
 function startTween(endX, endY) {
     const startX = player.x;
     const startY = player.y;
+    const distance = Math.sqrt(Math.pow(endX - startX, 2) + Math.pow(endY - startY, 2));
+    const duration = (distance / MAX_PLAYER_SIZE) * TWEEN_DURATION; // Adjust duration based on distance
+
     const startTime = Date.now();
 
     function animateTween() {
         const elapsed = Date.now() - startTime;
-        const progress = Math.min(1, elapsed / TWEEN_DURATION);
+        const progress = Math.min(1, elapsed / duration);
         player.x = startX + (endX - startX) * progress;
         player.y = startY + (endY - startY) * progress;
 
