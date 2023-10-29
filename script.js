@@ -5,9 +5,9 @@ const ctx = canvas.getContext("2d");
 
 const rooms = [
     {
-        background: "Images/background (1).png",
-        foreground: "Images/foreground (1).png",
-        treasureMap: "Images/navmesh.png"
+        background: "townbg.jpeg",
+        foreground: "townfg.jpeg",
+        treasureMap: "towntm.jpeg"
     }
     // Add more rooms here as needed
 ];
@@ -51,31 +51,29 @@ function drawRoom() {
     const treasureMap = new Image();
 
     background.onload = function() {
-        ctx.drawImage(background, 0, 0, canvas.width, canvas.height);
-        drawPlayer();
+        foreground.onload = function() {
+            treasureMap.onload = function() {
+                ctx.drawImage(background, 0, 0, canvas.width, canvas.height);
+                drawPlayer();
+                ctx.drawImage(foreground, 0, 0, canvas.width, canvas.height);
+                ctx.globalAlpha = 0;
+                ctx.drawImage(treasureMap, 0, 0, canvas.width, canvas.height);
+                ctx.globalAlpha = 1;
+            };
+            treasureMap.onerror = function() {
+                console.error("Error loading treasure map image.");
+            };
+            treasureMap.src = currentRoomData.treasureMap;
+        };
+        foreground.onerror = function() {
+            console.error("Error loading foreground image.");
+        };
+        foreground.src = currentRoomData.foreground;
     };
     background.onerror = function() {
         console.error("Error loading background image.");
     };
     background.src = currentRoomData.background;
-
-    foreground.onload = function() {
-        ctx.drawImage(foreground, 0, 0, canvas.width, canvas.height);
-    };
-    foreground.onerror = function() {
-        console.error("Error loading foreground image.");
-    };
-    foreground.src = currentRoomData.foreground;
-
-    treasureMap.onload = function() {
-        ctx.globalAlpha = 0;
-        ctx.drawImage(treasureMap, 0, 0, canvas.width, canvas.height);
-        ctx.globalAlpha = 1;
-    };
-    treasureMap.onerror = function() {
-        console.error("Error loading treasure map image.");
-    };
-    treasureMap.src = currentRoomData.treasureMap;
 }
 
 canvas.addEventListener("click", function(event) {
