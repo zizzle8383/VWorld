@@ -7,7 +7,7 @@ const rooms = [
     {
         background: "townbg.jpeg",
         foreground: "townfg.jpeg",
-        treasureMap: "towntm.jpeg"
+        treasureMap: "towntm.png"
     }
     // Add more rooms here as needed
 ];
