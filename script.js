@@ -13,9 +13,6 @@ const rooms = [
 const player = {
     x: canvas.width / 2,
     y: canvas.height / 2,
-    originalWidth: 250, // Set the original width of the player sprite
-    originalHeight: 283, // Set the original height of the player sprite
-    scale: 0.5, // Initial scale factor
     sprite: new Image()
 };
 
@@ -29,6 +26,7 @@ player.sprite.onerror = function() {
 
 player.sprite.src = "kakapo.png";
 
+const MAX_PLAYER_SIZE = 100; // Set maximum size for the player sprite
 const TWEEN_DURATION = 500; // Duration of the movement animation in milliseconds
 
 function startTween(endX, endY) {
@@ -53,13 +51,17 @@ function startTween(endX, endY) {
 }
 
 function drawPlayer() {
-    const width = player.originalWidth * player.scale;
-    const height = player.originalHeight * player.scale;
-    ctx.drawImage(player.sprite, player.x - width / 2, player.y - height / 2, width, height);
+    // Calculate the scaled width and height for the player sprite
+    const scale = Math.min(1, MAX_PLAYER_SIZE / player.sprite.width, MAX_PLAYER_SIZE / player.sprite.height);
+    const width = player.sprite.width * scale;
+    const height = player.sprite.height * scale;
+
+    // Draw player after the treasure map
+    ctx.drawImage(player.sprite, player.x, player.y, width, height);
 }
 
 function drawRoom() {
-    const currentRoomData = rooms[0]; // For simplicity, considering only the first room
+    const currentRoomData = rooms[0]; // For simplicity, use the first room in the rooms array
     const background = new Image();
     const foreground = new Image();
     const treasureMap = new Image();
@@ -94,22 +96,18 @@ function drawRoom() {
 
 canvas.addEventListener("click", function(event) {
     const rect = canvas.getBoundingClientRect();
-    const mouseX = (event.clientX - rect.left - canvas.width / 2) / player.scale + player.x;
-    const mouseY = (event.clientY - rect.top - canvas.height / 2) / player.scale + player.y;
+    const mouseX = event.clientX - rect.left - player.sprite.width / 2;
+    const mouseY = event.clientY - rect.top - player.sprite.height / 2;
 
-    const isClickable = checkPixelCollision(mouseX, mouseY);
-    
+    const imageData = ctx.getImageData(mouseX + player.sprite.width / 2, mouseY + player.sprite.height / 2, 1, 1).data;
+    const isClickable = imageData[3] > 0;
+
     if (isClickable) {
         startTween(mouseX, mouseY);
     }
 });
 
-function checkPixelCollision(x, y) {
-    const imageData = ctx.getImageData(x, y, 1, 1).data;
-    return imageData[3] > 0; // Check if the alpha value is greater than 0 (pixel is not transparent)
-}
-
 window.onload = function() {
     // Load the initial room
-    drawRoom();
+    player.sprite.onload();
 };
