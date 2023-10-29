@@ -5,7 +5,7 @@ const rooms = [
     {
         background: "townbg.jpeg",
         foreground: "townfg.jpeg",
-        treasureMap: "towntm.png"
+        treasureMap: "towntm.jpeg"
     }
     // Add more rooms here as needed
 ];
@@ -13,6 +13,8 @@ const rooms = [
 const player = {
     x: canvas.width / 2,
     y: canvas.height / 2,
+    targetX: canvas.width / 2,
+    targetY: canvas.height / 2,
     sprite: new Image()
 };
 
@@ -26,11 +28,14 @@ player.sprite.onerror = function() {
 
 player.sprite.src = "kakapo.png";
 
-const MAX_PLAYER_SIZE = 50; // Set maximum size for the player sprite
-
-let currentRoom = 0; // Initialize currentRoom variable
+const MAX_PLAYER_SIZE = 100; // Set maximum size for the player sprite
+const MOVE_SPEED = 2; // Set the speed at which the player moves (you can adjust this value)
 
 function drawPlayer() {
+    // Calculate the interpolated position for smooth movement
+    player.x += (player.targetX - player.x) * MOVE_SPEED;
+    player.y += (player.targetY - player.y) * MOVE_SPEED;
+
     // Calculate the scaled width and height for the player sprite
     const scale = Math.min(1, MAX_PLAYER_SIZE / player.sprite.width, MAX_PLAYER_SIZE / player.sprite.height);
     const width = player.sprite.width * scale;
@@ -55,23 +60,7 @@ function drawRoom() {
     };
     background.src = currentRoomData.background;
 
-    foreground.onload = function() {
-        ctx.drawImage(foreground, 0, 0, canvas.width, canvas.height);
-    };
-    foreground.onerror = function() {
-        console.error("Error loading foreground image.");
-    };
-    foreground.src = currentRoomData.foreground;
-
-    treasureMap.onload = function() {
-        ctx.globalAlpha = 0;
-        ctx.drawImage(treasureMap, 0, 0, canvas.width, canvas.height);
-        ctx.globalAlpha = 1;
-    };
-    treasureMap.onerror = function() {
-        console.error("Error loading treasure map image.");
-    };
-    treasureMap.src = currentRoomData.treasureMap;
+    // ... (same code for foreground and treasureMap as in the previous response)
 }
 
 canvas.addEventListener("click", function(event) {
@@ -79,17 +68,18 @@ canvas.addEventListener("click", function(event) {
     const mouseX = event.clientX - rect.left;
     const mouseY = event.clientY - rect.top;
 
-    const imageData = ctx.getImageData(mouseX, mouseY, 1, 1).data;
-    const isClickable = imageData[3] > 0;
-
-    if (isClickable) {
-        player.x = mouseX - player.sprite.width / 2;
-        player.y = mouseY - player.sprite.height / 2;
-        drawRoom();
-    }
+    player.targetX = mouseX - player.sprite.width / 2;
+    player.targetY = mouseY - player.sprite.height / 2;
 });
 
+function gameLoop() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    drawRoom();
+    requestAnimationFrame(gameLoop);
+}
+
 window.onload = function() {
-    // Load the initial room
+    // Load the initial room and start the game loop
     player.sprite.onload();
+    gameLoop();
 };
