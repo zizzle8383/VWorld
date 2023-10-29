@@ -27,6 +27,7 @@ player.sprite.onerror = function() {
 player.sprite.src = "kakapo.png";
 
 const TWEEN_DURATION = 500; // Duration of the movement animation in milliseconds
+const MAX_PLAYER_SIZE = 50; // Set maximum size for the player sprite
 
 function startTween(endX, endY) {
     const startX = player.x;
@@ -50,7 +51,12 @@ function startTween(endX, endY) {
 }
 
 function drawPlayer() {
-    ctx.drawImage(player.sprite, player.x, player.y);
+    // Calculate the scaled width and height for the player sprite
+    const scale = Math.min(1, MAX_PLAYER_SIZE / player.sprite.width, MAX_PLAYER_SIZE / player.sprite.height);
+    const width = player.sprite.width * scale;
+    const height = player.sprite.height * scale;
+
+    ctx.drawImage(player.sprite, player.x, player.y, width, height);
 }
 
 function drawRoom() {
